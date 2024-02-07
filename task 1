@@ -1,0 +1,83 @@
+#include <iostream>
+#include <cstdlib>
+#include <ctime>
+#include <limits>
+
+using namespace std;
+
+// Function to get a random number between min and max
+int getRandomNumber(int min, int max) {
+    static bool initialized = false;
+    if (!initialized) {
+        srand(time(0));
+        initialized = true;
+    }
+    return min + rand() % (max - min + 1);
+}
+
+// Function to play the game for a given difficulty level
+void playGame(int difficulty) {
+    const int maxChoices[] = {0, 10, 7, 5};
+    const char* difficultyNames[] = {"Invalid", "Easy", "Medium", "Difficult"};
+    const int maxChoice = maxChoices[difficulty];
+    const int secretNumber = getRandomNumber(1, 100);
+
+    if (maxChoice == 0) {
+        cout << "Exiting the game.\n";
+        exit(0);
+    }
+
+    cout << "\nYou have " << maxChoice << " choices for finding the secret number between 1 and 100.\n";
+    for (int choicesLeft = maxChoice; choicesLeft > 0; choicesLeft--) {
+        int playerChoice;
+        cout << "\n\nEnter your guess (" << choicesLeft << " choices left): ";
+        if (!(cin >> playerChoice)) {
+            cout << "Invalid input. Please enter a number.\n";
+            cin.clear();
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            continue;
+        }
+
+        if (playerChoice == secretNumber) {
+            cout << "Congratulations! You won. " << playerChoice << " is the secret number.\n";
+            break;
+        } else {
+            cout << "Incorrect guess. ";
+            if (playerChoice > secretNumber)
+                cout << "The secret number is smaller.\n";
+            else
+                cout << "The secret number is greater.\n";
+        }
+
+        if (choicesLeft == 1) {
+            cout << "You have used all your choices. The secret number was " << secretNumber << ". You lose.\n";
+        }
+    }
+}
+
+int main() {
+    cout << "\n\t\t\tWelcome to GuessTheNumber game!\n"
+         << "You have to guess a number between 1 and 100. "
+            "You'll have limited choices based on the level you choose. Good Luck!\n";
+
+    while (true) {
+        cout << "\nEnter the difficulty level:\n"
+             << "1 for easy\n"
+             << "2 for medium\n"
+             << "3 for difficult\n"
+             << "0 to exit\n";
+
+        int difficulty;
+        cout << "Enter your choice: ";
+        if (!(cin >> difficulty) || difficulty < 0 || difficulty > 3) {
+            cout << "Invalid input. Please enter a number between 0 and 3.\n";
+            cin.clear();
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            continue;
+        }
+
+        playGame(difficulty);
+    }
+
+    return 0;
+}
